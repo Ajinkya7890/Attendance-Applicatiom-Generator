@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Attendance Application</title>
+    <link rel="stylesheet" href="/static/app.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Event Attendance Form</h2>
+        <form id="attendanceForm">
+            <div class="detatil">
+                <label>Your Name:
+                </label>
+                <input type="text" id="senderName" placeholder="Enter your name" required>
+                <label>Event Name:
+                </label>
+                <input type="text" id="eventName" placeholder="Enter event name" required>
+                <label>Venue/Institution Name:
+                </label>
+                <input type="text" id="eventLocation" placeholder="Enter location" required>
+                <label>Start Date:
+                </label>
+                <input type="date" id="startDate" required>
+                <label>End Date:
+                </label>
+                <input type="date" id="endDate" required>
+            </div>
+
+            <div class="student-list">
+                <label>Select Students:</label>
+
+                <label>
+                    <input type="checkbox" class="student" value="Aryan Thawkar (UID: 23011023)">
+                    Aryan Thawkar</label>
+                <label>
+                    <input type="checkbox" class="student" value="Nishant Gakare (UID: 23011032)">
+                    Nishant Gakare</label>
+                <label>
+                    <input type="checkbox" class="student" value="Ishan Pote (UID: 23011002)">
+                    Ishan Pote</label>
+                <label>
+                    <input type="checkbox" class="student" value="Ajinkya Mariche (UID: 23011026)">
+                    Ajinkya Mariche</label>
+                <label>
+                    <input type="checkbox" class="student" value="Manjosh Lilhare (UID: 23011025)">
+                    Manjosh Lilhare</label>
+            </div>
+
+            <button type="button" onclick="generateApplication()">Generate Application</button>
+            <button type="button" id="downloadBtn" style="display: none;" onclick="downloadApplication()">Download as
+                Word</button>
+        </form>
+
+        <!-- ✅ Application Display Section -->
+        <div id="application" style="display: none; margin-top: 20px;">
+            <div class="application-container">
+                <p id="appContent"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        function generateApplication() {
+            let senderName = document.getElementById("senderName").value.trim();
+            let eventName = document.getElementById("eventName").value.trim();
+            let eventLocation = document.getElementById("eventLocation").value.trim();
+            let startDate = document.getElementById("startDate").value;
+            let endDate = document.getElementById("endDate").value;
+
+            let selectedStudents = [];
+            document.querySelectorAll(".student:checked").forEach(student => {
+                selectedStudents.push(student.value);
+            });
+
+            if (!senderName || !eventName || !eventLocation || !startDate || !endDate || selectedStudents.length === 0) {
+                alert("⚠️ Please fill all fields and select at least one student.");
+                return;
+            }
+
+            // ✅ Construct application content using template literals
+            let applicationText = `
+                To<br>
+                Class Counsellor<br>
+                CSE Data Science<br><br>
+
+                <strong>Subject:</strong> Request for Attendance Grant – ${eventName} Participation<br><br>
+
+                Respected Sir/Madam,<br><br>
+
+                I hope you are doing well. I, <strong>${senderName}</strong>, from CSE Data Science, am participating in <strong>${eventName}</strong> to be held at <strong>${eventLocation}</strong> from <strong>${startDate}</strong> to <strong>${endDate}</strong>. 
+                This event is a great opportunity to enhance our technical skills, problem-solving abilities, and teamwork.<br><br>
+
+                <strong>The participating members from our class are:</strong><br>
+                ${selectedStudents.join(", ")}<br><br>
+
+                We kindly request you to grant us attendance for the mentioned dates.<br><br>
+
+                Sincerely,<br>
+                <strong>${senderName}</strong><br>
+                CSE Data Science
+            `;
+
+            document.getElementById("appContent").innerHTML = applicationText;
+
+            document.getElementById("application").style.display = "block";
+
+            // ✅ Store data for Flask backend
+            localStorage.setItem("eventData", JSON.stringify({
+                senderName,
+                eventName,
+                eventLocation,
+                startDate,
+                endDate,
+                students: selectedStudents
+            }));
+
+            // ✅ Show download button
+            document.getElementById("downloadBtn").style.display = "block";
+
+            // ✅ Scroll smoothly to application section
+            document.getElementById("application").scrollIntoView({ behavior: "smooth" });
+        }
+
+        function downloadApplication() {
+            let eventData = localStorage.getItem("eventData");
+            if (!eventData) {
+                alert("⚠️ Please generate the application first.");
+                return;
+            }
+
+            fetch("/download", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: eventData
+            })
+                .then(response => response.blob())
+                .then(blob => {
+                    let link = document.createElement("a");
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = "Event_Attendance_Application.docx";
+                    link.click();
+                })
+                .catch(error => console.error("Download failed:", error));
+        }
+    </script>
+</body>
+
+</html>
