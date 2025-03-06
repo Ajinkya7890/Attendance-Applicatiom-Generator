@@ -17,12 +17,10 @@ def generate_document():
     start_date = data.get("startDate", "Unknown Start Date")
     end_date = data.get("endDate", "Unknown End Date")
     students = data.get("students", [])
+    sender_name = data.get("senderName", "Unknown Student")  # Fix: Get sender name from frontend
 
     if not students:
         return jsonify({"error": "No students selected"}), 400
-
-    # Extract first student as sender
-    sender_name = students[0].split(" (UID")[0]
 
     # Create Word document
     doc = Document()
@@ -35,7 +33,7 @@ def generate_document():
         doc.add_paragraph(student)
 
     doc.add_paragraph("\nWe kindly request you to grant us attendance for the mentioned dates.\n\nLooking forward to your kind consideration.\n\n")
-    doc.add_paragraph(f"Sincerely,\n{sender_name}\nCSE Data Science")
+    doc.add_paragraph(f"Sincerely,\n{sender_name}\nCSE Data Science")  # Fix: Use correct sender name
 
     # Save file
     filename = "Event_Attendance_Application.docx"
@@ -43,6 +41,7 @@ def generate_document():
     doc.save(filepath)
 
     return send_file(filepath, as_attachment=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
