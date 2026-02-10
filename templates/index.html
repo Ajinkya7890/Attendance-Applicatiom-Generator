@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Attendance Application</title>
     <link rel="stylesheet" href="/static/app.css">
+
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <script>
+        (function () {
+            emailjs.init("2dbEEsipNp7REQJzt");
+        })();
+    </script>
 </head>
 
 <body>
@@ -13,141 +21,138 @@
         <h2>Event Attendance Application</h2>
         <form id="attendanceForm">
             <div class="detatil">
-                <label>Your Name:
-                </label>
-                <input type="text" id="senderName" placeholder="Enter your name" required>
-                <label>Event Name:
-                </label>
-                <input type="text" id="eventName" placeholder="Enter event name" required>
-                <label>Venue/Institution Name:
-                </label>
-                <input type="text" id="eventLocation" placeholder="Enter location" required>
-                <label>Start Date:
-                </label>
+                <label>Your Name:</label>
+                <input type="text" id="senderName" required>
+
+                <label>Event Name:</label>
+                <input type="text" id="eventName" required>
+
+                <label>Venue/Institution Name:</label>
+                <input type="text" id="eventLocation" required>
+
+                <label>Start Date:</label>
                 <input type="date" id="startDate" required>
-                <label>End Date:
-                </label>
+
+                <label>End Date:</label>
                 <input type="date" id="endDate" required>
+
+                <label>Receiver Email (optional):</label>
+                <input type="email" id="toEmail" placeholder="Enter teacher email">
+                
+                <!-- ✅ NEW OPTION -->
+                <label style="margin-top:8px;">
+                    <input type="checkbox" id="sendEmailOption">
+                    Send email notification
+                </label>
             </div>
 
             <div class="student-list">
                 <label>Select Students:</label>
-
-                <label>
-                    <input type="checkbox" class="student" value="Aryan Thawkar (UID: 23011023)">
-                    Aryan Thawkar</label>
-                <label>
-                    <input type="checkbox" class="student" value="Nishant Gakare (UID: 23011032)">
-                    Nishant Gakare</label>
-                <label>
-                    <input type="checkbox" class="student" value="Ishan Pote (UID: 23011002)">
-                    Ishan Pote</label>
-                <label>
-                    <input type="checkbox" class="student" value="Ajinkya Mariche (UID: 23011026)">
-                    Ajinkya Mariche</label>
-                <label>
-                    <input type="checkbox" class="student" value="Shrenik Nil (UID: 23011033)">
-                    Shrenik Nil</label>
+                <label><input type="checkbox" class="student" value="Aryan Thawkar (UID: 23011023)"> Aryan Thawkar</label>
+                <label><input type="checkbox" class="student" value="Nishant Gakare (UID: 23011032)"> Nishant Gakare</label>
+                <label><input type="checkbox" class="student" value="Ishan Pote (UID: 23011002)"> Ishan Pote</label>
+                <label><input type="checkbox" class="student" value="Ajinkya Mariche (UID: 23011026)"> Ajinkya Mariche</label>
+                <label><input type="checkbox" class="student" value="Shrenik Nil (UID: 23011033)"> Shrenik Nil</label>
             </div>
 
             <button type="button" onclick="generateApplication()">Generate Application</button>
-            <button type="button" id="downloadBtn" style="display: none;" onclick="downloadApplication()">Download as
-                Word</button>
+            <button type="button" id="downloadBtn" style="display:none;" onclick="downloadApplication()">Download as Word</button>
         </form>
 
-        <!-- ✅ Application Display Section -->
-        <div id="application" style="display: none; margin-top: 20px;">
+        <div id="application" style="display:none; margin-top:20px;">
             <div class="application-container">
                 <p id="appContent"></p>
             </div>
         </div>
     </div>
 
-    <script src="/static/app.js"></script>
-    <script>
-        function generateApplication() {
-            let senderName = document.getElementById("senderName").value.trim();
-            let eventName = document.getElementById("eventName").value.trim();
-            let eventLocation = document.getElementById("eventLocation").value.trim();
-            let startDate = document.getElementById("startDate").value;
-            let endDate = document.getElementById("endDate").value;
-
-            let selectedStudents = [];
-            document.querySelectorAll(".student:checked").forEach(student => {
-                selectedStudents.push(student.value);
-            });
-
-            if (!senderName || !eventName || !eventLocation || !startDate || !endDate || selectedStudents.length === 0) {
-                alert("⚠️ Please fill all fields and select at least one student.");
-                return;
-            }
-
-            // ✅ Construct application content using template literals
-            let applicationText = `
-                To<br>
-                Class Counsellor<br>
-                CSE Data Science<br><br>
-
-                <strong>Subject:</strong> Request for Attendance Grant – ${eventName} Participation<br><br>
-
-                Respected Sir/Madam,<br><br>
-
-                I hope you are doing well. I, <strong>${senderName}</strong>, from CSE Data Science, am participating in <strong>${eventName}</strong> to be held at <strong>${eventLocation}</strong> from <strong>${startDate}</strong> to <strong>${endDate}</strong>. 
-                This event is a great opportunity to enhance our technical skills, problem-solving abilities, and teamwork.<br><br>
-
-                <strong>The participating members from our class are:</strong><br>
-                ${selectedStudents.join(", ")}<br><br>
-
-                We kindly request you to grant us attendance for the mentioned dates.<br><br>
-
-                Sincerely,<br>
-                <strong>${senderName}</strong><br>
-                CSE Data Science
-            `;
-
-            document.getElementById("appContent").innerHTML = applicationText;
-
-            document.getElementById("application").style.display = "block";
-
-            // ✅ Store data for Flask backend
-            localStorage.setItem("eventData", JSON.stringify({
-                senderName,
-                eventName,
-                eventLocation,
-                startDate,
-                endDate,
-                students: selectedStudents
-            }));
-
-            // ✅ Show download button
-            document.getElementById("downloadBtn").style.display = "block";
-
-            // ✅ Scroll smoothly to application section
-            document.getElementById("application").scrollIntoView({ behavior: "smooth" });
+<script>
+function sendEmail(data) {
+    emailjs.send("service_rqrt9n5", "template_q7qffj9", {
+        sender_name: data.senderName,
+        event_name: data.eventName,
+        event_location: data.eventLocation,
+        start_date: data.startDate,
+        end_date: data.endDate,
+        to_email: data.toEmail
+    }).then(
+        function () {
+            alert("📧 Email sent successfully!");
+        },
+        function (error) {
+            console.log("Email failed...", error);
+            alert("❌ Email failed to send");
         }
+    );
+}
 
-        function downloadApplication() {
-            let eventData = localStorage.getItem("eventData");
-            if (!eventData) {
-                alert("⚠️ Please generate the application first.");
-                return;
-            }
+function generateApplication() {
+    let senderName = document.getElementById("senderName").value.trim();
+    let eventName = document.getElementById("eventName").value.trim();
+    let eventLocation = document.getElementById("eventLocation").value.trim();
+    let startDate = document.getElementById("startDate").value;
+    let endDate = document.getElementById("endDate").value;
+    let toEmail = document.getElementById("toEmail").value.trim();
+    let sendEmailChecked = document.getElementById("sendEmailOption").checked;
 
-            fetch("/download", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: eventData
-            })
-                .then(response => response.blob())
-                .then(blob => {
-                    let link = document.createElement("a");
-                    link.href = window.URL.createObjectURL(blob);
-                    link.download = "Event_Attendance_Application.docx";
-                    link.click();
-                })
-                .catch(error => console.error("Download failed:", error));
-        }
-    </script>
+    let selectedStudents = [];
+    document.querySelectorAll(".student:checked").forEach(student => {
+        selectedStudents.push(student.value);
+    });
+
+    if (!senderName || !eventName || !eventLocation || !startDate || !endDate || selectedStudents.length === 0) {
+        alert("⚠️ Please fill all required fields.");
+        return;
+    }
+
+    if (sendEmailChecked && !toEmail) {
+        alert("⚠️ Please enter receiver email to send mail.");
+        return;
+    }
+
+    let applicationText = `
+        To<br>
+        Class Counsellor<br>
+        CSE Data Science<br><br>
+        <strong>Subject:</strong> Request for Attendance Grant – ${eventName} Participation<br><br>
+        Respected Sir/Madam,<br><br>
+        I, <strong>${senderName}</strong>, am participating in <strong>${eventName}</strong> at <strong>${eventLocation}</strong> from <strong>${startDate}</strong> to <strong>${endDate}</strong>.<br><br>
+        Participants:<br>${selectedStudents.join(", ")}<br><br>
+        Kindly grant attendance.<br><br>
+        Sincerely,<br><strong>${senderName}</strong>
+    `;
+
+    document.getElementById("appContent").innerHTML = applicationText;
+    document.getElementById("application").style.display = "block";
+    document.getElementById("downloadBtn").style.display = "block";
+
+    // ✅ Optional email
+    if (sendEmailChecked) {
+        sendEmail({ senderName, eventName, eventLocation, startDate, endDate, toEmail });
+    }
+
+    localStorage.setItem("eventData", JSON.stringify({
+        senderName, eventName, eventLocation, startDate, endDate, students: selectedStudents
+    }));
+}
+
+function downloadApplication() {
+    let eventData = localStorage.getItem("eventData");
+
+    fetch("/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: eventData
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        let link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "Event_Attendance_Application.docx";
+        link.click();
+    });
+}
+</script>
+
 </body>
-
 </html>
