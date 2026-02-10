@@ -56,7 +56,6 @@ The application will be accessible at `http://127.0.0.1:5000/`.
 ## Authors
 This project was developed by:
 - **Ajinkya Mariche**
-- **Manjosh Lilhare**
 - **Aryan Thawkar**
 
 ## Contributing
