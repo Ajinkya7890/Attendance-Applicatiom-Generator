@@ -1,12 +1,14 @@
-# Event Attendance Request Generator
+# Event Attendance Application Generator
 
-This Flask web application generates an attendance request document for students participating in events. It allows users to input event details and student names, then generates a Word document (.docx) for submission.
+This Flask web application generates an attendance request letter for students participating in events. Users enter event details, select participants, preview the letter, and download a Word document (.docx). An optional email notification can be sent via EmailJS.
 
 ## Features
-- Input event details (name, location, dates)
-- Add student participants
-- Generate a properly formatted attendance request letter in `.docx` format
-- Download the document instantly
+- Input event details (name, venue, dates)
+- Select student participants from a list
+- Live preview of the application letter
+- Generate and download a formatted `.docx` file
+- Optional email notification using EmailJS
+- Vercel-ready deployment
 
 ## Installation
 
@@ -17,13 +19,7 @@ python --version
 ```
 Install the required dependencies using:
 ```sh
-pip install flask python-docx
-```
-
-### Clone the Repository
-```sh
-git clone https://github.com/your-username/event-attendance-request.git
-cd event-attendance-request
+pip install -r requirements.txt
 ```
 
 ## Usage
@@ -38,19 +34,26 @@ The application will be accessible at `http://127.0.0.1:5000/`.
 
 ### How to Use
 1. Open the application in a web browser.
-2. Enter event details and add student names.
-3. Click the **Generate Document** button.
-4. The `.docx` file will be automatically downloaded.
+2. Enter event details and select student names.
+3. (Optional) enter a receiver email and enable the email checkbox.
+4. Click **Generate Application** to preview.
+5. Click **Download as Word** to download the `.docx` file.
+
+### EmailJS Configuration (Optional)
+Email sending uses EmailJS in the frontend. If you want to use your own EmailJS account, replace the `emailjs.init`, service ID, and template ID in `templates/index.html`.
 
 ## Project Structure
 ```
-/
-├── app.py                 # Flask backend
+/ 
+├── app.py                # Flask backend
+├── requirements.txt      # Python dependencies
 ├── templates/
-│   ├── index.html         # Frontend UI
+│   └── index.html        # Frontend UI
 ├── static/
-│   ├── Event_Attendance_Application.docx  # Generated files (temporary)
-├── README.md              # Project documentation
+│   └── app.css           # Styling
+├── vercel.json           # Vercel deployment config
+├── users.json            # Student data (if used/extended)
+└── README.md             # Project documentation
 ```
 
 ## Authors
