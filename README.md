@@ -1,5 +1,10 @@
 # 📄 Event Attendance Application Generator
 
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![Flask](https://img.shields.io/badge/Flask-Web%20Framework-black)
+![Vercel](https://img.shields.io/badge/Deployment-Vercel-black)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 A Flask-based web application that automates the process of generating official attendance request letters for students participating in hackathons, workshops, seminars, competitions, and other academic events.
 
 Users can enter event details, select participating students, preview the generated application, download it as a professionally formatted Word document, and optionally send an email notification.
@@ -198,6 +203,8 @@ templates/index.html
 GitHub: https://github.com/Ajinkya7890
 
 ### Aryan Thawkar
+
+Github : https://github.com/aryan-thawkar
 
 ---
 
